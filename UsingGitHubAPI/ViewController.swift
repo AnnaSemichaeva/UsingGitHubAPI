@@ -8,9 +8,16 @@
 import UIKit
 
 class ViewController: UIViewController {
-
+    
+    //let requestString = "https://api.github.com/repositories"
+    
+    let url =  URL(string: "https://api.github.com/repositories")!
+    
+    var repositories: [Repository] = []
+    
     let data: [String] = ["mom", "papa", "Borya", "Spasite", "Menya", "Pozhalyista", "Mne", "Ochen'", "Slozhno", "No", "ya", "horoshaya", "devochka", "i", "ya", "so", "vsem", "spravlys"]
     
+    // its like "@IBOutlet weak var tableView: UITableView!"
     var tableView: UITableView = {
         let table = UITableView()
         table.translatesAutoresizingMaskIntoConstraints = false
@@ -27,7 +34,16 @@ class ViewController: UIViewController {
         title = "gggggg"
         
         setUpTableView()
-        
+        loadData()
+    }
+    
+    private func loadData() {
+        NetworkingHelpers.loadData(url: url) { [weak self] repositories in
+            self?.repositories = repositories
+            DispatchQueue.main.async {
+                self?.tableView.reloadData()
+            }
+        }
     }
 
     private func setUpTableView() {
@@ -50,12 +66,14 @@ class ViewController: UIViewController {
 
 extension ViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        data.count
+//        data.count
+        repositories.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        cell.textLabel?.text = data[indexPath.row]
+//        cell.textLabel?.text = data[indexPath.row]
+        cell.textLabel?.text = repositories[indexPath.row].name
         return cell
     }
     
